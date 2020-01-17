@@ -1,6 +1,6 @@
 const canvas = document.querySelector("canvas");
-const w = Math.floor(window.innerWidth / 3);
-const h = Math.floor(window.innerHeight / 3.5);
+const w = Math.floor(window.innerWidth / 2.5);
+const h = Math.floor(window.innerHeight / 4);
 
 canvas.width = w;
 canvas.height = h;
@@ -48,21 +48,33 @@ class Snake {
     c.fillRect(this.x, this.y, this.w, this.h);
     c.stroke();
     c.closePath();
+
+    this.update()
+  }
+
+  update() {
+    if (this.x < 0) this.x = w;
+    else if (this.x > w) this.x = 0;
+  }
+
+  moveRight() {
+    this.x += this.velocity.x
   }
 
   moveLeft() {
-    this.x += this.velocity.x;
+    this.x -= this.velocity.x
   }
 }
 
-const defaultLong = 5;
-const gap = 10;
 const snakes = [];
 (function init() {
+  const defaultLong = 10;
+  const gap = 10;
   const wSnake = 16;
   const hSnake = 20;
-  let x = randomIntNum(wSnake, w);
-  let y = randomIntNum(hSnake, h);
+  let x = w / 2;
+  let y = h / 2;
+
   for (let i = 0; i < defaultLong; i++) {
     if (i !== 0) x += gap;
 
@@ -70,21 +82,17 @@ const snakes = [];
   }
 })();
 
-setInterval(() => {
-  snakes.forEach(snake => snake.moveLeft());
-}, 1000);
-
 (function animate() {
-  requestAnimationFrame(animate);
-  c.clearRect(0, 0, w, h);
+  let intervalAnimate = setInterval(() => {
+    requestAnimationFrame(animate);
+    c.clearRect(0, 0, w, h);
 
-  drawBait(100, 100);
+    clearInterval(intervalAnimate)
+  }, 1000);
+
+  drawBait(w / 1.2, h / 1.2);
   snakes.forEach(snake => {
     snake.draw();
-
-    if (snake.x > w) snake.x = 0;
-    if (snake.x < 0) snake.x = w;
-    if (snake.y > h) snake.y = 0;
-    if (snake.y < 0) snake.y = h;
+    snake.moveRight()
   });
 })();
